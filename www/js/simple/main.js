@@ -1,8 +1,5 @@
-var template = require('text!tmpl/simple.tmpl')
 
-var template = require(['text!tmpl/simple.tmpl'],function (template) {
-  console.log(template)
-})
+var template = require('text!tmpl/simple.tmpl')
 var Tmpl = require('yate')
 
-//console.log(new Template(template))
+console.log(new Tmpl(template))
