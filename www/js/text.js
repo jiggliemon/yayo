@@ -9,7 +9,7 @@
   java: false, location: false */
 
 define(['module'], function (module) {
-    'use strict';
+    //'use strict';
 
     var progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
         xmlRegExp = /^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im,

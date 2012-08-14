@@ -7,15 +7,11 @@
 (function () {
 window.require = {
    baseUrl: "js"
-  ,packages: [
-    ,{ name: 'blocks', location: 'lib/blocks/src' }
-    ,{ name: 'yate', location: 'lib/yate/src'}
-    ,{ name: 'yale', location: 'lib/yale/src'}
-    ,{ name: 'yaul', location: 'lib/yaul/src'}
-    ,'simple'
-  ]
-  ,deps:['simple']
+  ,deps:['lib/yayo/dependencies']
   ,callback: function() {
+    require(['blocks/block'], function (Block) {
+      console.log(Block)
+    })
   }
 }
 }())
