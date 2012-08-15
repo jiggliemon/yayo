@@ -1,4 +1,9 @@
-var template = require('text!tmpl/simple.tmpl')
-var Tmpl = require('yate')
+var Module = require('yayo/module')
+var template = require('text!../tmpl/simple.tmpl')
+console.log(template)
+var Simple = new Module({
+  template: template
 
-console.log(new Tmpl(template))
+})
+
+module.exports = Simple

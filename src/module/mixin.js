@@ -1,12 +1,7 @@
-define([
-  'yaul/hasOwn'
-  ,'yaul/slice'
-  ,'yaul/isArray'
-], function (
-   hasOwn
-  ,slice
-  ,isArray
-){
+
+var hasOwn = require('yaul/hasOwn')
+var slice = require('yaul/slice')
+var isArray =  require('yaul/isArray')
 
 var mixin = {
   /**
@@ -76,6 +71,4 @@ var mixin = {
 
 }
 
-return mixin
-
-})
+module.exports = mixin

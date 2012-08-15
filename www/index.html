@@ -7,11 +7,20 @@
 (function () {
 window.require = {
    baseUrl: "js"
-  ,deps:['lib/yayo/dependencies']
-  ,callback: function() {
-    require(['blocks/block'], function (Block) {
-      console.log(Block)
-    })
+  ,packages: [
+     { name: 'blocks', location: 'lib/blocks/src' }
+    ,{ name: 'yate', location: 'lib/yate/src'}
+    ,{ name: 'yale', location: 'lib/yale/src'}
+    ,{ name: 'yaul', location: 'lib/yaul/src'}
+    ,{ name: 'yeah', location: 'lib/yeah/src'}
+    ,{ name: 'yayo', location: 'lib/yayo'}
+    ,{name: 'simple', location:'simple'}
+  ]
+  ,deps:['simple']
+  ,callback: function(Simple) {
+    console.dir(Simple)
+    var simpleBlock = new Simple()
+    document.body.appendChild(simpleBlock.toElement())
   }
 }
 }())

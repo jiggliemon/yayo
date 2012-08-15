@@ -1,20 +1,11 @@
-define([
-   './mixin'
-  ,'../template/mixin'
-  ,'../block/mixin'
-  ,'../mediator/mixin'
-  ,'yaul/typeOf'
-  ,'yaul/hasOwn'
-  ,'yaul/extend'
-], function (
-   ModuleMixin
-  ,TemplateMixin
-  ,BlockMixin
-  ,MediatorMixin
-  ,typeOf
-  ,hasOwn
-  ,extend
-) {
+
+var ModuleMixin = require('./mixin')
+var TemplateMixin = require('yate/mixin')
+var BlockMixin = require('blocks/block/mixin')
+var EventsMixin = require('yeah/mixin')
+var typeOf = require('yaul/typeOf')
+var hasOwn = require('yaul/hasOwn')
+var extend = require('yaul/extend')
 
 function implement (key, value, retain, undef){
   var k
@@ -37,8 +28,8 @@ function implement (key, value, retain, undef){
 function wrap (self, key, method){
   function wrapper () {
     var caller = this.caller 
-      , current = this.$caller
-      , result
+    var current = this.$caller
+    var result
 
     this.caller = current 
     this.$caller = wrapper
@@ -60,29 +51,38 @@ function wrap (self, key, method){
 function Mod (methods) {
   methods = methods || {}
   function Module () {
-    // implement.call(this,methods)
+    implement.call(this,methods)
     // console.log(methods)
     this.initialize && this.initialize.apply(this, arguments)
   }
 
   Module.prototype = extend({
+    defaults: {
+      onReady: ['template:ready', function blockReady () {
+        var self = this
+        self.ready = true
+        self.setContext(self.options.context)
+        self.setContext('block',self)
+        self.bindTemplate()
+        self.fillContainer()
+      }]
+    }
     /**
      *
      *
      */
      parent: function (){
       var  name = this.$caller.$name
-          ,parent = this.$caller.$parent
+      var parent = this.$caller.$parent
       if (!parent) {
         throw new Error('The method "' + name + '" has no parent.')
       }
       return parent.apply(this, arguments)
     }
-  }, methods, ModuleMixin, BlockMixin, TemplateMixin, MediatorMixin )
+  }, methods, ModuleMixin, BlockMixin, TemplateMixin, EventsMixin )
 
   return Module
 }
 
-return Mod
+module.exports = Mod
 
-})
