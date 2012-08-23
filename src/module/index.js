@@ -9,7 +9,9 @@ var extend = require('yaul/extend')
 
 function implement (key, value, retain, undef){
   var k
-  if (key === undef) return
+  if (key === undef) {
+    return
+  }
 
   if (typeOf(key,'object')) {
     for ( k in key ) {
@@ -62,21 +64,39 @@ function Mod (methods) {
         var self = this
         self.ready = true
         self.setContext(self.options.context)
-        self.setContext('block',self)
         self.bindTemplate()
         self.fillContainer()
       }]
+    }
+
+    /**
+     *
+     *
+     */
+    ,initialize: function (options) {
+      var self = this
+      options = self.options = extend(self.defaults,options)
+      self.readyReady()
+    
+      if (options.attachEvents) {
+        self.attachEvents = options.attachEvents
+      }
+
+      self.setChildren( options.children )
+      self.setContainer( options.container )
+      self.setTemplate( options.template )
     }
     /**
      *
      *
      */
-     parent: function (){
-      var  name = this.$caller.$name
+    ,parent: function (){
+      var name = this.$caller.$name
       var parent = this.$caller.$parent
       if (!parent) {
         throw new Error('The method "' + name + '" has no parent.')
       }
+      
       return parent.apply(this, arguments)
     }
   }, methods, ModuleMixin, BlockMixin, TemplateMixin, EventsMixin )

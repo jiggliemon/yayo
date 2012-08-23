@@ -12,10 +12,10 @@ var mixin = {
     var self = this
     return (function () {
       var args = arguments
-        , target = args[0]
-        , key
-        , i = 1
-        , l = args.length
+      var target = args[0]
+      var key
+      var i = 1
+      var l = args.length
           
       for (; i < l; i++) {
         for ( key in args[i] ) {
@@ -44,7 +44,7 @@ var mixin = {
    *
    */
   ,readyReady: function (args) {
-    if(!args && this.options.onReady) {
+    if (!args && this.options.onReady) {
       args = this.options.onReady
     } else {
       return

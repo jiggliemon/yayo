@@ -15,12 +15,19 @@ window.require = {
     ,{ name: 'yeah', location: 'lib/yeah/src'}
     ,{ name: 'yayo', location: 'lib/yayo'}
     ,{name: 'simple', location:'simple'}
+
   ]
-  ,deps:['simple']
-  ,callback: function(Simple) {
-    console.dir(Simple)
-    var simpleBlock = new Simple()
-    document.body.appendChild(simpleBlock.toElement())
+  ,deps:['simple','yayo/parse/object', 'yayo/parse/query']
+  ,callback: function(Simple,ParseObject, ParseQuery) {
+    //console.dir(Simple)
+    //var simpleBlock = new Simple()
+    //document.body.appendChild(simpleBlock.toElement())
+
+    var req = ParseObject.request
+    console.log(ParseObject)
+    req('get', 'Poll', function (err, response) {
+      console.log(response)
+    })
   }
 }
 }())
