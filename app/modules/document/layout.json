@@ -1,0 +1,45 @@
+/* 
+  root 
+    document
+      head
+      header
+      right
+      content
+      left
+      footer
+      footer.js
+*/
+{
+  "name":"block.name", 
+  "type":"core/text", 
+  "children":[
+    {"name":"some.block", "type":"core/list"}
+    {"name":"some.nested.block","type":"core/text"}
+  ]
+}
+
+[{
+  "reference":"block.name", 
+  "actions":[
+    {"addClass":["block.name"]}
+    {"removeBlock":["some.block"]}
+  ]
+  ,"children":[
+    {"name":"new.block","type":"core/text"}
+  ]
+}]
+
+{"name": "root","type":"core/text", "children": {
+  "document":[
+    {"name": "document","type":"core/text","template":"1-column.tmpl",
+      "children":{
+        "head":[
+          {"type":"core/head","template":"head.tmpl"}
+        ],
+        "header":[
+          {"type":"core/header","template"}
+        ]
+      }
+    }
+  ]
+}
