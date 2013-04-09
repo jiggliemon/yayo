@@ -1,0 +1,6 @@
+{
+  "get /": {
+     "controller":"home"
+    ,"action": "index"
+  }
+}
