@@ -1,6 +1,0 @@
-{
-  "reference":"root",
-  "actions":[
-    {"addChild": [{"name": "create","type": "home/create"}]}
-  ]
-}
