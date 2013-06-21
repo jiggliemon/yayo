@@ -10,12 +10,16 @@ var modules = heyo.getModules()
 // app.use(heyo)
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
-});
+  app.set('port', process.env.PORT || 3000)
+})
 
 app.configure('development', function(){
-  app.use(express.errorHandler());
-});
+  app.use(express.errorHandler())
+})
+
+// app.configure('production', function () {
+
+// })
 
 for (var method in routes ) {
   var routeMethods = routes[method]
@@ -30,10 +34,7 @@ for (var method in routes ) {
   }
 }
 
-// app.get('/', function (req, res) {
-//   res.send(heyo.getModules())
-// })
 
 http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
-});
+  console.log("Express server listening on port " + app.get('port'))
+})

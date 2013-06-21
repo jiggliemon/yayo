@@ -1,0 +1,6 @@
+{
+  "get /user/:id": {
+     "controller":"user"
+    ,"action":"show"
+  }
+}

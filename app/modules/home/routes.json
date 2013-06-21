@@ -3,4 +3,8 @@
      "controller":"home"
     ,"action": "index"
   }
+  ,"get /do-something": {
+    "controller": "home"
+    ,"action":"doSomething"
+  }
 }
