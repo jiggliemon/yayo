@@ -2,6 +2,7 @@
   "name":"yayo",
   "version":"0.0.1",
   "dependencies":{
-    "lodash":"*"
+    "lodash":"*",
+    "yeah":"*"
   }        
 }

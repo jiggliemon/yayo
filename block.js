@@ -1,3 +1,5 @@
+var lodash = require('lodash')
+var extend = lodash.extend
 
 var legalPlacements = {'top':1,'bottom':1,'before':1,'after':1}
 
