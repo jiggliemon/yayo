@@ -1,32 +1,39 @@
 var lodash = require('lodash')
+var yeah = require('yeah')
 var extend = lodash.extend
+var result = lodash.result
 
-var legalPlacements = {'top':1,'bottom':1,'before':1,'after':1}
-
-function block (name,options) {
-  var blocks = this._blocks = this._blocks || []
-  var blockMap = this._map = this._map || {}
-  var data = this._data = this._data || {}
+function block ( options ) {
+  this.initialize(options)
 }
 
 block.prototype = {
 
-  initialize: function () {
+  initialize: function ( options ) {
+    options = options || {}
 
+    this._map = this._map || {}
+    this.children = []
+    this._data = {}
+
+    if (options.name) {
+      this.name = options.name
+      delete options.name
+    }
   }
 
-  ,get: function (key) {
+  ,get: function ( key ) {
     return this._data[key]
   }
 
-  ,set: function (key, value) {
+  ,set: function ( key, value ) {
     this._data[key] = value
     return this
   }
 
   // Do we need this?  Should the block instance
   // be an extended model?
-  ,setModel: function (model) {
+  ,setModel: function ( model ) {
     this.model = model
     return this
   }
@@ -46,7 +53,7 @@ block.prototype = {
    * @param name {string} A reference to child block
    * @returns block
    */
-  ,reference: function (name) {
+  ,reference: function ( name ) {
     var blocks = this._map
     if (typeof name == 'string') {
       var block = blocks[name]
@@ -58,9 +65,9 @@ block.prototype = {
   }
 
   /**
-   *
+   * Should this be queryable?
    */
-  ,getBlock: function (name) {
+  ,getBlock: function ( name ) {
     return this._map[name]
   }
 
@@ -72,22 +79,22 @@ block.prototype = {
    * @param reference {block | string} This will refrence another child for `before` or `after`
    * @returns this
    */
-  ,setBlock: function ( block, where, reference ) {
-    var blocks = this._blocks
+  ,setBlock: function ( block, where, ref ) {
+    var blocks = this.children
     
-    if (typeof reference == 'string') {
-      reference = this.reference(reference)
+    if ( typeof reference == 'string' ) {
+      reference = this.reference(ref)
     }
 
     // this will speedup lookups by key
-    if (block.name) {
-      this.map[block.name] = block
+    if ( block.name ) {
+      this._map[block.name] = block
     }
 
     // Maybe break this out to several 
     // convenience methods?
     // before, after are pretty damn similar
-    switch (where) {
+    switch ( where ) {
       case 'before': 
         var index = blocks.indexOf(reference)
         blocks.splice(index, 0, block)
@@ -111,6 +118,22 @@ block.prototype = {
   ,removeBlock: function () {
     
   }
+
+  /**
+   *   
+   *  @param obj {object} gets merged into the #option property.
+   *
+   *  @returns {object} Options
+   */
+  ,configure: function ( obj ) {
+    // stolen from backbone.
+    if ( this.options ) {
+      options = extend({}, result(this, 'options'), options)
+      this.options = options;
+    }
+
+    return this.options
+  }
 }
 
 // Because I always write addBlock.  Maybe this will have
@@ -118,14 +141,24 @@ block.prototype = {
 // the API later and have something to argue about
 block.prototype.addBlock = block.prototype.setBlock
 
+block.prototype.getChildHtml = function ( name ) {
+  var child = this._map[name]
+  return child?child.toHTML():''
+}
+
 // This will spawn a constructor.  Maybe not.
-block.create = function (name, options, methods) {
+block.create = function ( methods ) {
   var b = function () {
     this.initialize.apply(this, arguments)
   }
-  b.name = name
-  b.prototype = extend(new block, methods)
+  b.prototype = extend(new block(options), methods)
   return b
 }
+
+
+/**
+ *
+ */
+extend(block.prototype, yeah.prototype, )
 
 module.exports = block
