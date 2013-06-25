@@ -1,5 +1,7 @@
 var lodash = require('lodash')
 var yeah = require('yeah')
+var tmpl = require('kiev')
+
 var extend = lodash.extend
 var result = lodash.result
 
