@@ -5,15 +5,15 @@ var tmpl = require('kiev')
 var extend = lodash.extend
 var result = lodash.result
 
-function block ( options ) {
-  this.initialize(options)
+function block ( methods ) {
+  extend( this, methods)
+  this.initialize()
 }
 
 block.prototype = {
 
   initialize: function ( options ) {
     options = options || {}
-
     this._map = this._map || {}
     this.children = []
     this._data = {}
@@ -87,7 +87,7 @@ block.prototype = {
     if ( typeof reference == 'string' ) {
       reference = this.reference(ref)
     }
-
+    console.log(block.name)
     // this will speedup lookups by key
     if ( block.name ) {
       this._map[block.name] = block
@@ -136,6 +136,10 @@ block.prototype = {
 
     return this.options
   }
+
+  ,toString: function () {
+    return this.compile()
+  }
 }
 
 // Because I always write addBlock.  Maybe this will have
@@ -153,7 +157,8 @@ block.create = function ( methods ) {
   var b = function () {
     this.initialize.apply(this, arguments)
   }
-  b.prototype = extend(new block(options), methods)
+
+  b.prototype = new block(methods)
   return b
 }
 
@@ -161,6 +166,6 @@ block.create = function ( methods ) {
 /**
  *
  */
-extend(block.prototype, yeah.prototype, )
+extend(block.prototype, yeah.prototype, tmpl.prototype )
 
 module.exports = block
