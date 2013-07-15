@@ -1,6 +1,6 @@
 var Router = require('./router')
 var fs = require('fs')
-
+ 
 function Yayo (root, options) {
   this.root(root)
   //this.router = new Router
