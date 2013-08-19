@@ -87,7 +87,7 @@ block.prototype = {
     if ( typeof reference == 'string' ) {
       reference = this.reference(ref)
     }
-    console.log(block.name)
+
     // this will speedup lookups by key
     if ( block.name ) {
       this._map[block.name] = block
@@ -115,10 +115,12 @@ block.prototype = {
       case 'bottom':
         blocks.push(block)
     }
+
+    return this
   }
 
   ,removeBlock: function () {
-    
+    return this
   }
 
   /**
@@ -130,11 +132,11 @@ block.prototype = {
   ,configure: function ( obj ) {
     // stolen from backbone.
     if ( this.options ) {
-      options = extend({}, result(this, 'options'), options)
-      this.options = options;
+      obj = extend({}, result(this, 'options'), obj)
+      this.options = obj;
     }
 
-    return this.options
+    return this
   }
 
   ,toString: function () {
