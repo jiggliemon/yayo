@@ -1,4 +1,6 @@
 var block = require('../block')
+
+
 var assert = require('assert')
 
 describe ('block', function () {
@@ -19,7 +21,10 @@ describe ('block', function () {
     })
 
     it('the returned function should return a block instance when initialized', function () {
-      assert.ok(constructInstance instanceof block)
+      var keys = Object.keys(block.prototype)
+      assert.ok(keys.every(function (thing) {
+        return constructInstance[thing] !== undefined
+      }))
     })
 
   })
@@ -42,6 +47,27 @@ describe ('block', function () {
     })
   })
 
+  describe('block#setBlock', function () {
+    it('should add a block to the `children` property', function () {
+      constructInstance.setBlock(new block({
+        name: 'yeah bro'
+      }))
+      assert.equal(constructInstance.children.length, 1)
+    })
+
+    it('should add a reference in the block map if the block passed contains a `name` property', function () {
+      var blerk = new block({name: 'hello'})
+      constructInstance.setBlock(blerk)
+      assert.ok(constructInstance.reference('hello') == blerk)
+    })
+  })
+
+  describe('block#getBlock', function () {
+
+  })
+
+
+
   describe('block#toString', function () {
     it('should render `"No Template" if no template provided.', function () {
       var instance = new block
@@ -55,8 +81,6 @@ describe ('block', function () {
         name:'kid',
         template: "There"
       }))
-
-      console.log(instance)
 
       assert.equal("Hello There", instance.toString())
     })

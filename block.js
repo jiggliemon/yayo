@@ -1,6 +1,7 @@
 var lodash = require('lodash')
 var yeah = require('yeah')
 var tmpl = require('kiev')
+var create = require('./create')
 
 var extend = lodash.extend
 var result = lodash.result
@@ -24,14 +25,15 @@ block.prototype = {
     }
   }
 
-  ,get: function ( key ) {
-    return this._data[key]
-  }
+  // I'll try and see if this is really something we care about.
+  // ,get: function ( key ) {
+  //   return this._data[key]
+  // }
 
-  ,set: function ( key, value ) {
-    this._data[key] = value
-    return this
-  }
+  // ,set: function ( key, value ) {
+  //   this._data[key] = value
+  //   return this
+  // }
 
   // Do we need this?  Should the block instance
   // be an extended model?
@@ -84,6 +86,10 @@ block.prototype = {
   ,setBlock: function ( block, where, ref ) {
     var blocks = this.children
     
+    // Assign a reference to the parent.  This may be
+    // important to extablish x-block communication
+    block.parent = this
+
     if ( typeof reference == 'string' ) {
       reference = this.reference(ref)
     }
@@ -155,14 +161,7 @@ block.prototype.getChildHtml = function ( name ) {
 }
 
 // This will spawn a constructor.  Maybe not.
-block.create = function ( methods ) {
-  var b = function () {
-    this.initialize.apply(this, arguments)
-  }
-
-  b.prototype = new block(methods)
-  return b
-}
+block.create = create
 
 
 /**
