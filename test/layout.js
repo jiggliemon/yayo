@@ -35,6 +35,12 @@ describe('Layout', function () {
 			assert.equal(layout.reference('some.child'), zeeBlock)
 		})
 
+		it('should add a block to the root if no reference is passed', function () {
+			var blockYo = new block({name:"blurg"})
+			layout.addChild(blockYo)
+			assert.equal(layout.root.children.length, 1)
+		})
+
 	})
 
 	describe('#removeChild', function () {
