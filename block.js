@@ -1,7 +1,7 @@
 var lodash = require('lodash')
 var yeah = require('yeah')
 var tmpl = require('kiev')
-var create = require('./create')
+var create = require('./util').create
 
 var extend = lodash.extend
 var result = lodash.result
