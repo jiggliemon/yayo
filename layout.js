@@ -65,7 +65,7 @@ Layout.prototype = util.protoify({
   reference: function ( name ) {
     return this.map[name]
   }
-}, yeah.prototype )
+}, yeah.prototype)
 
 Layout.create = util.create
 
