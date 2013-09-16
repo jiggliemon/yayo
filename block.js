@@ -1,6 +1,7 @@
 var lodash = require('lodash')
 var yeah = require('yeah')
 var tmpl = require('kiev')
+var create = require('./util').create
 
 var extend = lodash.extend
 var result = lodash.result
@@ -24,14 +25,15 @@ block.prototype = {
     }
   }
 
-  ,get: function ( key ) {
-    return this._data[key]
-  }
+  // I'll try and see if this is really something we care about.
+  // ,get: function ( key ) {
+  //   return this._data[key]
+  // }
 
-  ,set: function ( key, value ) {
-    this._data[key] = value
-    return this
-  }
+  // ,set: function ( key, value ) {
+  //   this._data[key] = value
+  //   return this
+  // }
 
   // Do we need this?  Should the block instance
   // be an extended model?
@@ -84,10 +86,14 @@ block.prototype = {
   ,setBlock: function ( block, where, ref ) {
     var blocks = this.children
     
+    // Assign a reference to the parent.  This may be
+    // important to extablish x-block communication
+    block.parent = this
+
     if ( typeof reference == 'string' ) {
       reference = this.reference(ref)
     }
-    console.log(block.name)
+
     // this will speedup lookups by key
     if ( block.name ) {
       this._map[block.name] = block
@@ -115,10 +121,12 @@ block.prototype = {
       case 'bottom':
         blocks.push(block)
     }
+
+    return this
   }
 
   ,removeBlock: function () {
-    
+    return this
   }
 
   /**
@@ -130,11 +138,11 @@ block.prototype = {
   ,configure: function ( obj ) {
     // stolen from backbone.
     if ( this.options ) {
-      options = extend({}, result(this, 'options'), options)
-      this.options = options;
+      obj = extend({}, result(this, 'options'), obj)
+      this.options = obj;
     }
 
-    return this.options
+    return this
   }
 
   ,toString: function () {
@@ -153,14 +161,7 @@ block.prototype.getChildHtml = function ( name ) {
 }
 
 // This will spawn a constructor.  Maybe not.
-block.create = function ( methods ) {
-  var b = function () {
-    this.initialize.apply(this, arguments)
-  }
-
-  b.prototype = new block(methods)
-  return b
-}
+block.create = create
 
 
 /**

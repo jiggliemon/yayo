@@ -1,13 +1,21 @@
 var Router = require('./router')
+var Layout = require('./layout')
+var lodash = require('lodash')
 var fs = require('fs')
+
+// utils
+var extend = lodash.extend
+
+
  
 function Yayo (root, options) {
   this.root(root)
   //this.router = new Router
   this.options({
-     activeFile: "/app/etc/modules"
-    ,modulesDir: "/app/modules" 
+     activeFile: "app/etc/modules"
+    ,modulesDir: "app/modules" 
   }, options)
+  this.router = new Router(this)
 
   //this.initializeModules()
   this.initializeRoutes()
@@ -15,23 +23,22 @@ function Yayo (root, options) {
 }
 
 Yayo.prototype = {
-   process: function (req, res) {
-    console.log(this.activeModules)
+   process: function ( req, res ) {
   }
 
-  ,root: function (path) {
-    if (path) {
+  ,root: function ( path ) {
+    if ( path ) {
       this.setDir('root', path)
     }
     return this.dirs.root
   }
 
-  ,getDir: function (key) {
+  ,getDir: function ( key ) {
     this.dirs = this.dirs || {}
     return this.dirs[key]
   }
 
-  ,setDir: function (key, path) {
+  ,setDir: function ( key, path ) {
     this.dirs = this.dirs || {}
     this.dirs[key] = path
   }
@@ -41,7 +48,6 @@ Yayo.prototype = {
    *
    */
   ,initializeModules: function () {
-    //console.log(this.getModules())  
   }
   
   /**
@@ -49,10 +55,23 @@ Yayo.prototype = {
    *
    */
   ,initializeRoutes: function (routes) {
-    var modules = this.getModules()
-    
-    //console.log(modules)
-    // if (routes) {
+    // 1. Find the route files from their respective module directories
+    // 2. Decypher the route statement 
+        // ex: `module::controller#method` => {
+        //   module: 'module', 
+        //   controller: 'the controller',
+        //   method: 'method name'
+        //   fn: 'method reference'
+        // }
+    // 3. Apply
+
+    var modules = this.fetchModules()
+    console.log(modules)
+    // var modules = this.getModules()
+    // var self = this
+    // var routes = this.getRoutes(modules)
+    // console.log(routes)
+    // if ( routes ) {
     //   for (var method in routes ) {
     //     var routeMethods = routes[method]
     //     for (var route in routeMethods) {
@@ -60,7 +79,7 @@ Yayo.prototype = {
     //       var module = heyo.getModule(routeMethods[route].controller)
     //       var mod = require([module.location, 'controllers', routeMethods[route].controller].join('/') )
 
-    //       app[method.toLowerCase()](route, function (req, res) {
+    //       self.router[method.toLowerCase()](route, function (req, res) {
     //         mod[routeMethods[route].action].call(this, req, res, heyo)
     //       })
     //     }
@@ -73,10 +92,9 @@ Yayo.prototype = {
    *
    */
   ,getModule: function (key) {
-
     var activeModules = this.activeModules = this.activeModules ? 
       this.activeModules : 
-      this.setModule(require(this.root() + this.options('activeFile')))
+      this.setModule()
 
     return key? activeModules[key] : activeModules
   }
@@ -85,21 +103,46 @@ Yayo.prototype = {
    *
    *
    */
-  ,getModules: function () {
+  ,fetchModules: function () {
     var args = Array.prototype.slice.call(arguments,0)
     var modules
+    var self = this
 
-    if (args.length) {
-      modules = {}
-      args.forEach(function(module) {
-        modules[module] = this.getModule(module)
-      })
-    }
+    if ( !this.modules ) {
+      var ledgerFile = [this.root(), this.opt('activeFile')].join('/')
+      //var stats = fs.lstatSync(ledgerFile)
+      //if (stats.isDirectory()) {
+        var allModules = require(ledgerFile)
+      //} else if ( stats.isFile() ) {
+      //  var allModules = require()
+      //}
+      var activeModules = Object.keys(allModules)
+        .filter(function ( module ) {
+          return allModules[module]
+        }).map(function ( module ) {
+          var ret = {dir: '', controllers: [] }
+          var type = typeof allModules[module]
 
-    
-    return modules || this.activeModules || this.getModule()
+          switch (type) {
+            case 'boolean':
+              return buildModuleFromKey(module, [self.root(), self.opt('modulesDir'), module ].join('/'))
+              break
+          }
+        })
+      modules = this.modules = activeModules
+    } 
+
+    return modules
   }
   
+  /**
+   *
+   *
+   */
+  ,loadModuleRoutes: function () {
+
+  }
+
   /**
    *
    *
@@ -110,23 +153,7 @@ Yayo.prototype = {
 
     if (typeof key == 'string' && value) {
 
-      var location = this.root() + this.options('modulesDir') + '/' + key
-      var stat = fs.statSync(location)
-
-      if ( stat.isDirectory() ) {
-        var routes = require(location+'/routes')
-        var module = {
-           name: key
-          ,location: location
-          ,controllers: {}
-          ,views: {}
-          ,models:{}
-          ,routes:routes
-          //,stat: fs.statSync(location)
-        }
-        activeModules[key] = module
-        
-      }
+      
     } else {
       for (var k in key) {
         if (key.hasOwnProperty(k) && key[k]) {
@@ -241,7 +268,69 @@ Yayo.prototype = {
 
 }
 
+function buildModuleFromKey ( key, location ) {
+  var module,stat,stats,routes,dirs
+  
+  function getLocation (dir) {
+    return [location,dir].join('/')
+  }
+
+  try {
+    stat = fs.statSync(location)
+    if ( stat.isDirectory() ) {
+
+      dirs = {
+        controllers: getLocation('controllers'),
+        models: getLocation('models'),
+        views: getLocation('views'),
+        blocks: getLocation('blocks')
+      }
+
+      var routeStats = fs.statSync(getLocation('routes.json'))
+
+      if ( routeStats.isFile() ) {
+        routes = require(getLocation('routes.json'))
+      }
+
+      module = {
+         name: key
+        ,dir: location
+        ,controllers: getDirContents(getLocation('controllers'))
+        ,views: {}
+        ,models: getDirContents(getLocation('models'))
+        ,routes: routes
+      }
+      console.log(module)
+    }
+  } catch (e) {
+    console.log(e)
+  }
+  return module
+}
+
+function getDirContents ( dir ) {
+  var isDir = fs.existsSync(dir)
+  var files = {}
+  if ( isDir ) {
+    var fileList = fs.readdirSync(dir)
+    fileList.forEach(function ( fileOrDir ) {
+      var file = [dir,fileOrDir].join('/')
+      var exists = fs.existsSync(file)
+
+      // Make sure we're dealing with JavaScript
+      if (exists && ['js','json'].indexOf(getExtension(file)) !== -1 ) {
+        files[fileOrDir] = require(file)
+      }
+    })
+  }
+  return files
+}
+
+function getExtension (path) {
+  return (path.indexOf('.') !== -1)? String(path).split('.').pop(): ''
+}
+
 /* alias */
-Yayo.prototype.option = Yayo.prototype.options
+Yayo.prototype.option = Yayo.prototype.opt = Yayo.prototype.options
 
 module.exports = Yayo
